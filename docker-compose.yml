@@ -1,0 +1,12 @@
+services:
+  augbot:
+    build: .
+    image: augbot
+    container_name: augbot
+    restart: unless-stopped
+    env_file: .env
+    volumes:
+      - augbot-data:/data
+
+volumes:
+  augbot-data:

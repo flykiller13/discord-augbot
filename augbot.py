@@ -15,7 +15,7 @@ DEUS_EX_KEYWORDS = [
     'mankind', 'divided', 'human', 'revolution', 'eidos', 'aug'
 ]
 
-LAST_MENTION_FILE = 'last_mention.txt'
+LAST_MENTION_FILE = os.environ.get('LAST_MENTION_FILE', 'last_mention.txt')
 
 # 1–3 days — short streak broken
 DAY_SHORT = [
