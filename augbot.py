@@ -101,10 +101,23 @@ async def on_message(message):
 
     if message.author.bot:
         return
+
+    content = message.content.lower()
+
+    # Anyone can manually trigger a mention with [aug-bonk].
+    if content.startswith('[aug-bonk]'):
+        today = date.today()
+        last = read_last_mention()
+        if last == today:
+            return
+        write_last_mention(today)
+        days = (today - last).days if last is not None else None
+        await message.channel.send(f"<@{WATCHED_USER_ID}> {get_response(days)}")
+        return
+
     if message.author.id != WATCHED_USER_ID:
         return
 
-    content = message.content.lower()
     # Debug: messages starting with [kd] ("keep date") don't update last_mention.
     debug_keep_date = content.startswith('[kd]')
 

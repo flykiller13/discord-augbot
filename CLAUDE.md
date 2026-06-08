@@ -26,14 +26,36 @@ Configuration is read from environment variables, loaded from a `.env` file via 
 
 - `DISCORD_TOKEN` — the bot token.
 - `WATCHED_USER_ID` — the watched user's ID; read as a string and cast with `int()`.
+- `LAST_MENTION_FILE` — optional; path to the streak-state file (defaults to `last_mention.txt`). The Docker image sets this to `/data/last_mention.txt` so state lives on a persisted volume.
 
-Both are required; the bot raises `KeyError` on startup if either is missing.
+`DISCORD_TOKEN` and `WATCHED_USER_ID` are required; the bot raises `KeyError` on startup if either is missing.
 
 ## Running
+
+### Local venv
 
 The project uses a local `venv`. Install dependencies from `requirements.txt` (`discord.py==2.7.1`, `python-dotenv==1.2.2`):
 
 ```powershell
 venv\Scripts\python.exe -m pip install -r requirements.txt
 venv\Scripts\python.exe augbot.py
+```
+
+### Docker
+
+The bot is containerized via `Dockerfile` (Python 3.13-slim, runs as non-root `appuser`) and `docker-compose.yml`. Streak state is persisted to a `/data` volume, and config is read from `.env` (`env_file: .env`).
+
+Build and run with Compose (recommended — wires up the `.env` file and the `augbot-data` volume automatically):
+
+```powershell
+docker compose up -d --build      # build the image and start in the background
+docker compose logs -f            # follow logs (stdout/stderr are unbuffered)
+docker compose down               # stop and remove the container
+```
+
+Or build and run the image directly:
+
+```powershell
+docker build -t augbot .
+docker run -d --name augbot --restart unless-stopped --env-file .env -v augbot-data:/data augbot
 ```
